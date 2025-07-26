@@ -2,9 +2,9 @@
 
 import React, {useEffect, useState} from "react";
 import ChecklistCard from '../components/checklist-card'
-import {Grid} from "@mui/material";
-import axios from "axios";
 import {Checklist} from "@/types/checklist";
+import {Grid} from "@mui/material";
+import {getChecklists} from "@/networking/checklists";
 
 export default function Home() {
     const [checklists, setChecklists] = useState<Checklist[]>([]);
@@ -15,9 +15,7 @@ export default function Home() {
 
     const fetchChecklists = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/checklists");
-            console.log(response);
-            setChecklists(response.data);
+            setChecklists(await getChecklists());
         } catch (error: any) {
             console.log("Failed to fetch checklists");
         }
