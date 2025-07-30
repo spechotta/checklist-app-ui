@@ -2,6 +2,7 @@ export interface Item {
     id: number;
     text: string;
     isComplete: boolean;
+    checklistId: number;
 }
 
 export interface Checklist {
