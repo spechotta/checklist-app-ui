@@ -1,7 +1,7 @@
 import React from "react";
 import {Checklist, Item} from "@/types/checklist";
 import ChecklistRow from "@/components/checklist-row";
-import {updateItem} from "@/networking/checklists";
+import {updateItem, deleteItem} from "@/networking/checklists";
 import {
     Card,
     CardContent,
@@ -12,7 +12,7 @@ import {
 
 interface ChecklistCardProps {
     checklist: Checklist;
-    refreshChecklist: (checklistId: number) => Promise<any>;
+    refreshChecklist: (checklistId: number) => Promise<void>;
 }
 
 export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCardProps) {
@@ -36,6 +36,15 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
         await handleItemUpdate(editedItem);
     }
 
+    const deleteChecklistItem = async (item: Item) => {
+        try {
+            await deleteItem(item.checklistId, item.id);
+            await refreshChecklist(item.checklistId);
+        } catch (error: any) {
+            console.log("Failed to update item.");
+        }
+    }
+
     return (
         <Card>
             <CardContent sx={{backgroundColor: '#cbcbcb'}}>
@@ -49,7 +58,9 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
                                 key={item.id}
                                 item={item}
                                 updateItemIsComplete={updateItemIsComplete}
-                                updateItemText={updateItemText}/>
+                                updateItemText={updateItemText}
+                                deleteChecklistItem={deleteChecklistItem}
+                            />
                         ))}
                     </List>
                 </Paper>

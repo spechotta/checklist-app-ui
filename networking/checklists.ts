@@ -24,3 +24,13 @@ export async function updateItem(checklistId: number, itemId: number, item: Item
     console.log(response);
     return response.data;
 }
+
+export async function deleteItem(checklistId: number, itemId: number) {
+    const url = Constants.checklistAPI.item
+        .replace("{checklistId}", checklistId.toString())
+        .replace("{itemId}", itemId.toString());
+
+    const response = await axios.delete(url);
+    console.log(response);
+    return response.data;
+}
