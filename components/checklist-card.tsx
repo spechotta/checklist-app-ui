@@ -12,7 +12,7 @@ import {
 
 interface ChecklistCardProps {
     checklist: Checklist;
-    refreshChecklist: (checklistId: number) => void;
+    refreshChecklist: (checklistId: number) => Promise<any>;
 }
 
 export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCardProps) {
@@ -20,20 +20,20 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
     const handleItemUpdate = async (updatedItem: Item) => {
         try {
             await updateItem(updatedItem.checklistId, updatedItem.id, updatedItem);
-            refreshChecklist(updatedItem.checklistId);
+            await refreshChecklist(updatedItem.checklistId);
         } catch (error: any) {
             console.log("Failed to update item.");
         }
     }
 
-    const updateItemIsComplete = (item: Item) => {
+    const updateItemIsComplete = async (item: Item) => {
         const toggledItem = {...item, isComplete: !item.isComplete};
-        handleItemUpdate(toggledItem);
+        await handleItemUpdate(toggledItem);
     }
 
-    const updateItemText = (item: Item, editedText: string) => {
+    const updateItemText = async (item: Item, editedText: string) => {
         const editedItem = {...item, text: editedText};
-        handleItemUpdate(editedItem);
+        await handleItemUpdate(editedItem);
     }
 
     return (
@@ -45,7 +45,11 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
                 <Paper>
                     <List sx={{color: 'black', backgroundColor: '#f8f8f8'}}>
                         {checklist.items.map((item) => (
-                            <ChecklistRow key={item.id} item={item} updateItemIsComplete={updateItemIsComplete}/>
+                            <ChecklistRow
+                                key={item.id}
+                                item={item}
+                                updateItemIsComplete={updateItemIsComplete}
+                                updateItemText={updateItemText}/>
                         ))}
                     </List>
                 </Paper>
