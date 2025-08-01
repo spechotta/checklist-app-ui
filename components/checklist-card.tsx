@@ -2,7 +2,7 @@ import React from "react";
 import {Checklist, Item} from "@/types/checklist";
 import ChecklistRow from "./checklist-row";
 import AddChecklistItem from "./add-checklist-item"
-import {updateItem, deleteItem} from "@/networking/checklists";
+import {updateItem, deleteItem, addItem} from "@/networking/checklists";
 import {
     Card,
     CardContent,
@@ -17,6 +17,19 @@ interface ChecklistCardProps {
 }
 
 export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCardProps) {
+
+    const addChecklistItem = async (checklistId: number, newText: string) => {
+        const newItem = {
+            "text": newText,
+            "isComplete": false
+        };
+        try {
+            await addItem(checklistId, newItem);
+            await refreshChecklist(checklistId);
+        } catch (error: any) {
+            console.log("Failed to add new item.");
+        }
+    }
 
     const handleItemUpdate = async (updatedItem: Item) => {
         try {
@@ -63,7 +76,7 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
                                 deleteChecklistItem={deleteChecklistItem}
                             />
                         ))}
-                        <AddChecklistItem/>
+                        <AddChecklistItem checklistId={checklist.id} addChecklistItem={addChecklistItem}/>
                     </List>
                 </Paper>
             </CardContent>

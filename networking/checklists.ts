@@ -15,10 +15,17 @@ export async function getChecklist(checklistId: number) {
     return response.data;
 }
 
+export async function addItem(checklistId: number, item: { text: string, isComplete: boolean }) {
+    const url = Constants.checklistAPI.items.replace("{checklist_id}", checklistId.toString());
+    const response = await axios.post(url, item);
+    console.log(response);
+    return response.data;
+}
+
 export async function updateItem(checklistId: number, itemId: number, item: Item) {
     const url = Constants.checklistAPI.item
-        .replace("{checklistId}", checklistId.toString())
-        .replace("{itemId}", itemId.toString());
+        .replace("{checklist_id}", checklistId.toString())
+        .replace("{item_id}", itemId.toString());
 
     const response = await axios.put(url, item);
     console.log(response);
@@ -27,8 +34,8 @@ export async function updateItem(checklistId: number, itemId: number, item: Item
 
 export async function deleteItem(checklistId: number, itemId: number) {
     const url = Constants.checklistAPI.item
-        .replace("{checklistId}", checklistId.toString())
-        .replace("{itemId}", itemId.toString());
+        .replace("{checklist_id}", checklistId.toString())
+        .replace("{item_id}", itemId.toString());
 
     const response = await axios.delete(url);
     console.log(response);
