@@ -1,6 +1,7 @@
 import React from "react";
 import {Checklist, Item} from "@/types/checklist";
-import ChecklistRow from "@/components/checklist-row";
+import ChecklistRow from "./checklist-row";
+import AddChecklistItem from "./add-checklist-item"
 import {updateItem, deleteItem} from "@/networking/checklists";
 import {
     Card,
@@ -62,6 +63,7 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
                                 deleteChecklistItem={deleteChecklistItem}
                             />
                         ))}
+                        <AddChecklistItem/>
                     </List>
                 </Paper>
             </CardContent>
