@@ -1,7 +1,7 @@
 import React from "react";
 import {Checklist, Item} from "@/types/checklist";
 import ChecklistRow from "./checklist-row";
-import AddChecklistItem from "./add-checklist-item"
+import AddChecklistItem from "./add-checklist-item";
 import {updateItem, deleteItem, addItem} from "@/networking/checklists";
 import {
     Card,
