@@ -3,12 +3,15 @@
 import React, {useEffect, useState} from "react";
 import ChecklistCard from '../components/checklist-card';
 import AppBar from "../components/app-bar";
+import DeleteChecklistModal from "../components/delete-checklist-modal"
 import {Checklist} from "@/types/checklist";
 import {Grid} from "@mui/material";
-import {getChecklist, getChecklists} from "@/networking/checklists";
+import {getChecklist, getChecklists, deleteChecklist} from "@/networking/checklists";
 
 export default function Home() {
     const [checklists, setChecklists] = useState<Checklist[]>([]);
+    const [deleteChecklistDialogOpen, setDeleteChecklistDialogOpen] = useState(false);
+    const [checkListToDelete, setCheckListToDelete] = useState<Checklist | null>(null);
 
     useEffect(() => {
         fetchChecklists();
@@ -35,15 +38,47 @@ export default function Home() {
         }
     }
 
+    const handleDeleteChecklist = async (checklistId: number) => {
+        try {
+            await deleteChecklist(checklistId);
+            await fetchChecklists();
+            closeDeleteChecklistDialog();
+        } catch (error: any) {
+            console.log("Failed to delete checklist.");
+        }
+    }
+
+    const openDeleteChecklistDialog = (checklist: Checklist) => {
+        setCheckListToDelete(checklist);
+        setDeleteChecklistDialogOpen(true);
+    }
+
+    const closeDeleteChecklistDialog = () => {
+        setDeleteChecklistDialogOpen(false);
+        setTimeout(() => {
+            setCheckListToDelete(null);
+        }, 100);
+    }
+
     return (
         <>
             <AppBar/>
-            <Grid container spacing={2} sx={{m: 2}}>
+            <Grid container spacing={4} sx={{m: 2}} justifyContent={{xs: 'center', md: 'left'}}>
                 {checklists.map(checklist => (
-                    <Grid key={checklist.id} size={{xl: 3, lg: 3, md: 4, sm: 6, xs: 12}}>
-                        <ChecklistCard checklist={checklist} refreshChecklist={refreshChecklistById}/>
+                    <Grid key={checklist.id} size={{xl: 4, lg: 4, md: 6, sm: 9, xs: 12}}>
+                        <ChecklistCard
+                            checklist={checklist}
+                            refreshChecklist={refreshChecklistById}
+                            openDeleteChecklistDialog={openDeleteChecklistDialog}
+                        />
                     </Grid>))}
             </Grid>
+            <DeleteChecklistModal
+                open={deleteChecklistDialogOpen}
+                checklist={checkListToDelete}
+                onClose={closeDeleteChecklistDialog}
+                onConfirm={(id) => handleDeleteChecklist(id)}
+            />
         </>
     );
 }

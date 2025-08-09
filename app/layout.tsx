@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Checklist Manager",
+  title: "ListHub Checklist Manager",
   description: "An application for users to manage their checklists",
 };
 

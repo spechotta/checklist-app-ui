@@ -41,3 +41,10 @@ export async function deleteItem(checklistId: number, itemId: number) {
     console.log(response);
     return response.data;
 }
+
+export async function deleteChecklist(checklistId: number) {
+    const url = Constants.checklistAPI.checklist.replace("{checklist_id}", checklistId.toString());
+    const response = await axios.delete(url);
+    console.log(response);
+    return response.data;
+}

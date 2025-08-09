@@ -4,19 +4,24 @@ import ChecklistRow from "./checklist-row";
 import AddChecklistItem from "./add-checklist-item";
 import {updateItem, deleteItem, addItem} from "@/networking/checklists";
 import {
+    Box,
     Card,
     CardContent,
+    IconButton,
     List,
     Paper,
+    Tooltip,
     Typography
 } from "@mui/material";
+import ClearIcon from '@mui/icons-material/Clear';
 
 interface ChecklistCardProps {
     checklist: Checklist;
     refreshChecklist: (checklistId: number) => Promise<void>;
+    openDeleteChecklistDialog: (checklist: Checklist) => void;
 }
 
-export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCardProps) {
+export default function ChecklistCard({checklist, refreshChecklist, openDeleteChecklistDialog}: ChecklistCardProps) {
 
     const addChecklistItem = async (checklistId: number, newText: string) => {
         const newItem = {
@@ -62,9 +67,23 @@ export default function ChecklistCard({checklist, refreshChecklist}: ChecklistCa
     return (
         <Card>
             <CardContent sx={{backgroundColor: '#cbcbcb'}}>
-                <Typography sx={{color: 'text.secondary', fontSize: 14, mb: 1}}>
-                    {checklist.title}
-                </Typography>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 0.5
+                    }}
+                >
+                    <Typography sx={{color: 'text.secondary', fontSize: 14, mb: 1}}>
+                        {checklist.title}
+                    </Typography>
+                    <Tooltip title='Delete Checklist' placement='left'>
+                        <IconButton onClick={() => openDeleteChecklistDialog(checklist)}>
+                            <ClearIcon/>
+                        </IconButton>
+                    </Tooltip>
+                </Box>
                 <Paper>
                     <List sx={{color: 'black', backgroundColor: '#f8f8f8'}}>
                         {checklist.items.map((item) => (
