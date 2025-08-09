@@ -3,15 +3,18 @@
 import React, {useEffect, useState} from "react";
 import ChecklistCard from '../components/checklist-card';
 import AppBar from "../components/app-bar";
-import DeleteChecklistModal from "../components/delete-checklist-modal"
+import DeleteChecklistModal from "../components/delete-checklist-dialog"
 import {Checklist} from "@/types/checklist";
-import {Grid} from "@mui/material";
+import {Box, CircularProgress, Grid} from "@mui/material";
 import {getChecklist, getChecklists, deleteChecklist} from "@/networking/checklists";
+import Delay from "@/components/delay";
 
 export default function Home() {
+    const [isLoading, setIsLoading] = useState(true);
     const [checklists, setChecklists] = useState<Checklist[]>([]);
     const [deleteChecklistDialogOpen, setDeleteChecklistDialogOpen] = useState(false);
-    const [checkListToDelete, setCheckListToDelete] = useState<Checklist | null>(null);
+    const [checklistToDelete, setChecklistToDelete] = useState<Checklist | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchChecklists();
@@ -22,6 +25,8 @@ export default function Home() {
             setChecklists(await getChecklists());
         } catch (error: any) {
             console.log("Failed to fetch checklists.");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -40,30 +45,37 @@ export default function Home() {
 
     const handleDeleteChecklist = async (checklistId: number) => {
         try {
+            setIsDeleting(true);
             await deleteChecklist(checklistId);
             await fetchChecklists();
             closeDeleteChecklistDialog();
         } catch (error: any) {
             console.log("Failed to delete checklist.");
+        } finally {
+            setIsDeleting(false);
         }
     }
 
     const openDeleteChecklistDialog = (checklist: Checklist) => {
-        setCheckListToDelete(checklist);
+        setChecklistToDelete(checklist);
         setDeleteChecklistDialogOpen(true);
     }
 
     const closeDeleteChecklistDialog = () => {
         setDeleteChecklistDialogOpen(false);
-        setTimeout(() => {
-            setCheckListToDelete(null);
-        }, 100);
+        setChecklistToDelete(null);
     }
 
     return (
         <>
             <AppBar/>
-            <Grid container spacing={4} sx={{m: 2}} justifyContent={{xs: 'center', md: 'left'}}>
+            {isLoading ? (
+                <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
+                    <Delay wait={500}>
+                        <CircularProgress/>
+                    </Delay>
+                </Box>
+            ) : <Grid container spacing={4} sx={{m: 2}} justifyContent={{xs: 'center', md: 'left'}}>
                 {checklists.map(checklist => (
                     <Grid key={checklist.id} size={{xl: 4, lg: 4, md: 6, sm: 9, xs: 12}}>
                         <ChecklistCard
@@ -72,12 +84,13 @@ export default function Home() {
                             openDeleteChecklistDialog={openDeleteChecklistDialog}
                         />
                     </Grid>))}
-            </Grid>
+            </Grid>}
             <DeleteChecklistModal
                 open={deleteChecklistDialogOpen}
-                checklist={checkListToDelete}
+                checklist={checklistToDelete}
                 onClose={closeDeleteChecklistDialog}
                 onConfirm={(id) => handleDeleteChecklist(id)}
+                isDeleting={isDeleting}
             />
         </>
     );

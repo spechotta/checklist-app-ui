@@ -38,6 +38,7 @@ export default function AddChecklistItem({checklistId, addChecklistItem}: AddChe
     const saveNewItem = async (event: FormEvent) => {
         event.preventDefault();
         const trimmedText = newItemText.trim();
+        //TODO: move logic to trim item text to API service layer
 
         if (!trimmedText) {
             //TODO:add logic to display error message to user if trimmed text is empty

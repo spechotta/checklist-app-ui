@@ -6,17 +6,40 @@ import {
     DialogContentText,
     DialogTitle
 } from "@mui/material";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Checklist} from "@/types/checklist";
 
-interface DeleteChecklistModalProps {
+interface DeleteChecklistDialogProps {
     open: boolean;
     checklist: Checklist | null;
     onClose: () => void;
     onConfirm: (checklistId: number) => void;
+    isDeleting: boolean
 }
 
-export default function ChecklistCard({open, checklist, onClose, onConfirm}: DeleteChecklistModalProps) {
+export default function DeleteChecklistDialog({
+      open,
+      checklist,
+      onClose,
+      onConfirm,
+      isDeleting
+    }: DeleteChecklistDialogProps) {
+    const [title, setTitle] = useState<string | undefined>('');
+
+    const prepTitle = () => {
+        const preppedTitle = checklist?.title.split(' ').map(word => {
+            let preppedWord = word.trim();
+            return preppedWord.charAt(0).toUpperCase() + preppedWord.slice(1);
+        }).join(' ');
+
+        setTitle(preppedTitle);
+    }
+
+    useEffect(() => {
+        if (open) {
+            prepTitle();
+        }
+    }, [open]);
 
     return (
         <Dialog
@@ -24,7 +47,7 @@ export default function ChecklistCard({open, checklist, onClose, onConfirm}: Del
             onClose={onClose}
         >
             <DialogTitle>
-                {`Delete ${checklist?.title} Checklist?`}
+                {`Delete ${title} Checklist?`}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
@@ -37,6 +60,7 @@ export default function ChecklistCard({open, checklist, onClose, onConfirm}: Del
                 <Button
                     onClick={() => checklist && onConfirm(checklist.id)}
                     disabled={!checklist}
+                    loading={isDeleting}
                 >
                     Confirm
                 </Button>

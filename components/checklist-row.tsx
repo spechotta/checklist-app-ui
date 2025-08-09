@@ -45,6 +45,7 @@ export default function ChecklistRow({
     const saveEditedText = async (event: FormEvent) => {
         event.preventDefault();
         const trimmedText = editedText.trim();
+        //TODO: move logic to trim item text to API service layer
 
         if (!trimmedText) {
             await deleteChecklistItem(item);
