@@ -7,13 +7,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import {Checklist} from "@/types/checklist";
+import AddChecklistDialog from "@/components/add-checklist-dialog";
 
 export default function PrimarySearchAppBar() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
-
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const [isAddingChecklist, setIsAddingChecklist] = useState(false);
 
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -71,8 +73,16 @@ export default function PrimarySearchAppBar() {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <IconButton size="large" color="inherit">
+            <MenuItem
+                onClick={() => {
+                    setIsAddingChecklist(true);
+                    handleMobileMenuClose()
+                }}
+            >
+                <IconButton
+                    size="large"
+                    color="inherit"
+                >
                     <AddCircleOutlineIcon/>
                 </IconButton>
                 <p>Add New Checklist</p>
@@ -125,7 +135,11 @@ export default function PrimarySearchAppBar() {
                     <Box sx={{flexGrow: 1}}/>
                     <Box sx={{display: {xs: 'none', md: 'flex'}}}>
                         <Tooltip title="Add New Checklist">
-                            <IconButton size="large" color="inherit">
+                            <IconButton
+                                size="large"
+                                color="inherit"
+                                onClick={() => setIsAddingChecklist(true)}
+                            >
                                 <AddCircleOutlineIcon/>
                             </IconButton>
                         </Tooltip>
@@ -157,6 +171,16 @@ export default function PrimarySearchAppBar() {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
+            {isAddingChecklist && (
+                <AddChecklistDialog
+                    onClose={() => setIsAddingChecklist(false)}
+                    onSubmit={(newChecklist) => {
+                        //TODO: add POST request to networking file and call it from here
+                        console.log("Checklist created:", newChecklist);
+                        setIsAddingChecklist(false);
+                    }}
+                />
+            )}
         </Box>
     );
 }

@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react";
 import ChecklistCard from '../components/checklist-card';
 import AppBar from "../components/app-bar";
-import DeleteChecklistModal from "../components/delete-checklist-dialog"
+import DeleteChecklistDialog from "../components/delete-checklist-dialog"
 import {Checklist} from "@/types/checklist";
 import {Box, CircularProgress, Grid} from "@mui/material";
 import {getChecklist, getChecklists, deleteChecklist} from "@/networking/checklists";
@@ -85,7 +85,7 @@ export default function Home() {
                         />
                     </Grid>))}
             </Grid>}
-            <DeleteChecklistModal
+            <DeleteChecklistDialog
                 open={deleteChecklistDialogOpen}
                 checklist={checklistToDelete}
                 onClose={closeDeleteChecklistDialog}
