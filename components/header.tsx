@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useState} from "react";
 import {styled, alpha} from '@mui/material/styles';
 import {AppBar, Box, IconButton, InputBase, MenuItem, Toolbar, Tooltip, Typography} from "@mui/material";
@@ -7,10 +9,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import {Checklist} from "@/types/checklist";
 import AddChecklistDialog from "@/components/add-checklist-dialog";
 
-export default function PrimarySearchAppBar() {
+export default function Header() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(anchorEl);
