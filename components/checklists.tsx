@@ -7,6 +7,7 @@ import {Checklist} from "@/types/checklist";
 import {Box, CircularProgress, Grid} from "@mui/material";
 import {getChecklist, getChecklists, deleteChecklist} from "@/networking/checklists";
 import Delay from "@/components/delay";
+import ChecklistsHeader from "@/components/checklists-header";
 
 export default function Checklists() {
     const [isLoading, setIsLoading] = useState(true);
@@ -67,6 +68,7 @@ export default function Checklists() {
 
     return (
         <>
+            <ChecklistsHeader fetchChecklists={fetchChecklists}/>
             {isLoading ? (
                 <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
                     <Delay wait={500}>

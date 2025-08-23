@@ -1,6 +1,6 @@
 import axios from "axios";
 import Constants from "../utils/constants"
-import {Item} from "@/types/checklist";
+import {Checklist, Item} from "@/types/checklist";
 
 export async function getChecklists() {
     const response = await axios.get(Constants.checklistAPI.checklists);
@@ -45,6 +45,13 @@ export async function deleteItem(checklistId: number, itemId: number) {
 export async function deleteChecklist(checklistId: number) {
     const url = Constants.checklistAPI.checklist.replace("{checklist_id}", checklistId.toString());
     const response = await axios.delete(url);
+    console.log(response);
+    return response.data;
+}
+
+export async function addChecklist(checklist: Checklist) {
+    const url = Constants.checklistAPI.checklists;
+    const response = await axios.post(url, checklist);
     console.log(response);
     return response.data;
 }

@@ -18,34 +18,28 @@ import {
     TextField
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import {Checklist, Item} from "@/types/checklist";
 
-interface NewChecklist {
-    title: string,
-    items: NewItem[]
-}
-
-interface NewItem {
-    text: string;
-    isComplete: boolean;
-}
 
 interface AddChecklistDialogProps {
     onClose: () => void;
-    onSubmit: (checklist: NewChecklist) => void;
+    onSubmit: (checklist: Checklist) => void;
 }
 
 export default function AddChecklistDialog({onClose, onSubmit}: AddChecklistDialogProps) {
     const [title, setTitle] = useState("");
-    const [items, setItems] = useState<NewItem[]>([]);
+    const [items, setItems] = useState<Item[]>([]);
     const [newItemText, setNewItemText] = useState("");
     const [titleIsInvalid, setTitleIsInvalid] = useState(false);
 
     const handleAddItem = (event: FormEvent) => {
         event.preventDefault();
         if (newItemText) {
-            const newItem: NewItem = {
+            const newItem: Item = {
+                id: -1,
                 text: newItemText,
-                isComplete: false
+                isComplete: false,
+                checklistId: -1
             };
             setItems([...items, newItem]);
             setNewItemText("");
@@ -62,7 +56,8 @@ export default function AddChecklistDialog({onClose, onSubmit}: AddChecklistDial
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         if (title) {
-            const checklist: NewChecklist = {
+            const checklist: Checklist = {
+                id: -1,
                 title: title,
                 items: items
             };

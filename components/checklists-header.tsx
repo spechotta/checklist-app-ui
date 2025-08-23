@@ -10,8 +10,13 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AddChecklistDialog from "@/components/add-checklist-dialog";
+import {addChecklist} from "@/networking/checklists";
 
-export default function Header() {
+interface HeaderProps {
+    fetchChecklists: () => void;
+}
+
+export default function ChecklistsHeader({fetchChecklists}: HeaderProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(anchorEl);
@@ -175,9 +180,9 @@ export default function Header() {
             {isAddingChecklist && (
                 <AddChecklistDialog
                     onClose={() => setIsAddingChecklist(false)}
-                    onSubmit={(newChecklist) => {
-                        //TODO: add POST request to networking file and call it from here
-                        console.log("Checklist created:", newChecklist);
+                    onSubmit={async (newChecklist) => {
+                        await addChecklist(newChecklist);
+                        fetchChecklists();
                         setIsAddingChecklist(false);
                     }}
                 />
