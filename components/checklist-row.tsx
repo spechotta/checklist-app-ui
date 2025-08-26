@@ -38,7 +38,7 @@ export default function ChecklistRow({
     }
 
     const cancelEdit = () => {
-        setEditedText(item.text);
+        setEditedText("");
         setIsEditing(false);
     }
 

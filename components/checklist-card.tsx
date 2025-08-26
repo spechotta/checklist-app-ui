@@ -2,7 +2,7 @@ import React from "react";
 import {Checklist, Item} from "@/types/checklist";
 import ChecklistRow from "./checklist-row";
 import AddChecklistItem from "./add-checklist-item";
-import {updateItem, deleteItem, addItem} from "@/networking/checklists";
+import {updateItem, deleteItem, addItem, updateChecklist} from "@/networking/checklists";
 import {
     Box,
     Card,
@@ -10,10 +10,10 @@ import {
     IconButton,
     List,
     Paper,
-    Tooltip,
-    Typography
+    Tooltip
 } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
+import ChecklistTitle from "@/components/checklist-title";
 
 interface ChecklistCardProps {
     checklist: Checklist;
@@ -64,6 +64,15 @@ export default function ChecklistCard({checklist, refreshChecklist, openDeleteCh
         }
     }
 
+    const updateChecklistTitle = async (checklist: Checklist) => {
+        try {
+            await updateChecklist(checklist);
+            await refreshChecklist(checklist.id);
+        } catch (error: any) {
+            console.log("Failed to update checklist title.");
+        }
+    }
+
     return (
         <Card>
             <CardContent sx={{backgroundColor: '#cbcbcb'}}>
@@ -72,12 +81,10 @@ export default function ChecklistCard({checklist, refreshChecklist, openDeleteCh
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        mb: 0.5
+                        mb: 1.5
                     }}
                 >
-                    <Typography sx={{color: 'text.secondary', fontSize: 14, mb: 1}}>
-                        {checklist.title}
-                    </Typography>
+                    <ChecklistTitle checklist={checklist} updateChecklistTitle={updateChecklistTitle}/>
                     <Tooltip title='Delete Checklist' placement='left'>
                         <IconButton onClick={() => openDeleteChecklistDialog(checklist)}>
                             <ClearIcon/>

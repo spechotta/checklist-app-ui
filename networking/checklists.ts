@@ -55,3 +55,10 @@ export async function addChecklist(checklist: Checklist) {
     console.log(response);
     return response.data;
 }
+
+export async function updateChecklist(checklist: Checklist) {
+    const url = Constants.checklistAPI.checklist.replace("{checklist_id}", checklist.id.toString());
+    const response = await axios.put(url, checklist);
+    console.log(response);
+    return response.data;
+}
