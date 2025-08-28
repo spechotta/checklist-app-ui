@@ -4,10 +4,10 @@ import {Checklist} from "@/types/checklist";
 
 interface ChecklistTitleProps {
     checklist: Checklist;
-    updateChecklistTitle: (checklist: Checklist) => void;
+    handleUpdateChecklist: (checklist: Checklist) => Promise<boolean>;
 }
 
-export default function ChecklistTitle({checklist, updateChecklistTitle}: ChecklistTitleProps) {
+export default function ChecklistTitle({checklist, handleUpdateChecklist}: ChecklistTitleProps) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState("");
     const [titleIsInvalid, setTitleIsInvalid] = useState(false);
@@ -17,14 +17,15 @@ export default function ChecklistTitle({checklist, updateChecklistTitle}: Checkl
         setIsEditingTitle(false);
     }
 
-    const saveChecklistTitle = (event: FormEvent) => {
+    const saveChecklistTitle = async (event: FormEvent) => {
         event.preventDefault();
         if (editedTitle) {
             const editedChecklist = {...checklist};
             editedChecklist.title = editedTitle;
-            updateChecklistTitle(editedChecklist);
-            setIsEditingTitle(false);
-            setEditedTitle("");
+            if (await handleUpdateChecklist(editedChecklist)) {
+                setIsEditingTitle(false);
+                setEditedTitle("");
+            }
         } else {
             setTitleIsInvalid(true);
         }

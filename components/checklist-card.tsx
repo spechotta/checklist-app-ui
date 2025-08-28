@@ -17,11 +17,17 @@ import ChecklistTitle from "@/components/checklist-title";
 
 interface ChecklistCardProps {
     checklist: Checklist;
-    refreshChecklist: (checklistId: number) => Promise<void>;
+    refreshChecklist: (checklistId: number) => Promise<boolean>;
     openDeleteChecklistDialog: (checklist: Checklist) => void;
+    handleError: (message: string) => void;
 }
 
-export default function ChecklistCard({checklist, refreshChecklist, openDeleteChecklistDialog}: ChecklistCardProps) {
+export default function ChecklistCard({
+      checklist,
+      refreshChecklist,
+      openDeleteChecklistDialog,
+      handleError
+    }: ChecklistCardProps) {
 
     const addChecklistItem = async (checklistId: number, newText: string) => {
         const newItem = {
@@ -64,13 +70,15 @@ export default function ChecklistCard({checklist, refreshChecklist, openDeleteCh
         }
     }
 
-    const updateChecklistTitle = async (checklist: Checklist) => {
+    const handleUpdateChecklist = async (checklist: Checklist) => {
+        let success = false;
         try {
             await updateChecklist(checklist);
-            await refreshChecklist(checklist.id);
+            success = await refreshChecklist(checklist.id);
         } catch (error: any) {
-            console.log("Failed to update checklist title.");
+            handleError('Error updating checklist: ' + error.message);
         }
+        return success;
     }
 
     return (
@@ -84,7 +92,7 @@ export default function ChecklistCard({checklist, refreshChecklist, openDeleteCh
                         mb: 1.5
                     }}
                 >
-                    <ChecklistTitle checklist={checklist} updateChecklistTitle={updateChecklistTitle}/>
+                    <ChecklistTitle checklist={checklist} handleUpdateChecklist={handleUpdateChecklist}/>
                     <Tooltip title='Delete Checklist' placement='left'>
                         <IconButton onClick={() => openDeleteChecklistDialog(checklist)}>
                             <ClearIcon/>

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import ChecklistCard from '../components/checklist-card';
 import DeleteChecklistDialog from "../components/delete-checklist-dialog"
 import {Checklist} from "@/types/checklist";
-import {Box, CircularProgress, Grid} from "@mui/material";
+import {Alert, Box, CircularProgress, Grid, Snackbar} from "@mui/material";
 import {getChecklist, getChecklists, deleteChecklist} from "@/networking/checklists";
 import Delay from "@/components/delay";
 import ChecklistsHeader from "@/components/checklists-header";
@@ -15,6 +15,8 @@ export default function Checklists() {
     const [deleteChecklistDialogOpen, setDeleteChecklistDialogOpen] = useState(false);
     const [checklistToDelete, setChecklistToDelete] = useState<Checklist | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         fetchChecklists();
@@ -31,6 +33,7 @@ export default function Checklists() {
     }
 
     const refreshChecklistById = async (checklistId: number) => {
+        let success = false;
         try {
             const updatedChecklist = await getChecklist(checklistId);
             setChecklists(prevChecklists =>
@@ -38,9 +41,11 @@ export default function Checklists() {
                     checklist.id === checklistId
                         ? updatedChecklist
                         : checklist));
+            success = true;
         } catch (error: any) {
-            console.log("Failed to refresh checklist.");
+            handleError('Error refreshing checklist: ' + error.message);
         }
+        return success;
     }
 
     const handleDeleteChecklist = async (checklistId: number) => {
@@ -66,6 +71,11 @@ export default function Checklists() {
         setChecklistToDelete(null);
     }
 
+    const handleError = (message: string) => {
+        setShowError(true);
+        setErrorMessage(message);
+    }
+
     return (
         <>
             <ChecklistsHeader fetchChecklists={fetchChecklists}/>
@@ -82,6 +92,7 @@ export default function Checklists() {
                             checklist={checklist}
                             refreshChecklist={refreshChecklistById}
                             openDeleteChecklistDialog={openDeleteChecklistDialog}
+                            handleError={handleError}
                         />
                     </Grid>))}
             </Grid>}
@@ -92,6 +103,20 @@ export default function Checklists() {
                 onConfirm={(id) => handleDeleteChecklist(id)}
                 isDeleting={isDeleting}
             />
+            <Snackbar
+                open={showError}
+                autoHideDuration={6000}
+                onClose={() => setShowError(false)}
+            >
+                <Alert
+                    onClose={() => setShowError(false)}
+                    severity="error"
+                    variant="filled"
+                    sx={{width: '100%'}}
+                >
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
         </>
     );
 }
