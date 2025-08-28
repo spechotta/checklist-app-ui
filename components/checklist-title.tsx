@@ -4,10 +4,10 @@ import {Checklist} from "@/types/checklist";
 
 interface ChecklistTitleProps {
     checklist: Checklist;
-    handleUpdateChecklist: (checklist: Checklist) => Promise<boolean>;
+    handleUpdateAndRefreshChecklist: (checklist: Checklist) => Promise<void>;
 }
 
-export default function ChecklistTitle({checklist, handleUpdateChecklist}: ChecklistTitleProps) {
+export default function ChecklistTitle({checklist, handleUpdateAndRefreshChecklist}: ChecklistTitleProps) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState("");
     const [titleIsInvalid, setTitleIsInvalid] = useState(false);
@@ -19,16 +19,17 @@ export default function ChecklistTitle({checklist, handleUpdateChecklist}: Check
 
     const saveChecklistTitle = async (event: FormEvent) => {
         event.preventDefault();
-        if (editedTitle) {
-            const editedChecklist = {...checklist};
-            editedChecklist.title = editedTitle;
-            if (await handleUpdateChecklist(editedChecklist)) {
+        try {
+            if (editedTitle) {
+                const editedChecklist = {...checklist};
+                editedChecklist.title = editedTitle;
+                await handleUpdateAndRefreshChecklist(editedChecklist);
                 setIsEditingTitle(false);
                 setEditedTitle("");
+            } else {
+                setTitleIsInvalid(true);
             }
-        } else {
-            setTitleIsInvalid(true);
-        }
+        } catch (error: any) {}
     }
 
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +42,10 @@ export default function ChecklistTitle({checklist, handleUpdateChecklist}: Check
         <Box>
             {isEditingTitle ? (
                 <ClickAwayListener onClickAway={cancelEdit}>
-                    <form onSubmit={saveChecklistTitle}>
+                    <form
+                        onSubmit={saveChecklistTitle}
+                        noValidate
+                    >
                         <TextField
                             variant="standard"
                             value={editedTitle}

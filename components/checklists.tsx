@@ -33,7 +33,6 @@ export default function Checklists() {
     }
 
     const refreshChecklistById = async (checklistId: number) => {
-        let success = false;
         try {
             const updatedChecklist = await getChecklist(checklistId);
             setChecklists(prevChecklists =>
@@ -41,11 +40,10 @@ export default function Checklists() {
                     checklist.id === checklistId
                         ? updatedChecklist
                         : checklist));
-            success = true;
         } catch (error: any) {
             handleError('Error refreshing checklist: ' + error.message);
+            throw error;
         }
-        return success;
     }
 
     const handleDeleteChecklist = async (checklistId: number) => {
