@@ -18,6 +18,7 @@ import ChecklistTitle from "@/components/checklist-title";
 interface ChecklistCardProps {
     checklist: Checklist;
     refreshChecklist: (checklistId: number) => Promise<void>;
+    setChecklistById: (checklist: Checklist) => void;
     openDeleteChecklistDialog: (checklist: Checklist) => void;
     handleError: (message: string) => void;
 }
@@ -25,6 +26,7 @@ interface ChecklistCardProps {
 export default function ChecklistCard({
       checklist,
       refreshChecklist,
+      setChecklistById,
       openDeleteChecklistDialog,
       handleError
     }: ChecklistCardProps) {
@@ -72,16 +74,11 @@ export default function ChecklistCard({
 
     const handleUpdateChecklist = async (checklist: Checklist) => {
         try {
-            await updateChecklist(checklist);
+            const updatedChecklist = await updateChecklist(checklist);
+            setChecklistById(updatedChecklist);
         } catch (error: any) {
             handleError('Error updating checklist: ' + error.message);
-            throw error;
         }
-    }
-
-    const handleUpdateAndRefreshChecklist = async (checklist: Checklist) => {
-        await handleUpdateChecklist(checklist);
-        await refreshChecklist(checklist.id);
     }
 
     return (
@@ -95,7 +92,7 @@ export default function ChecklistCard({
                         mb: 1.5
                     }}
                 >
-                    <ChecklistTitle checklist={checklist} handleUpdateAndRefreshChecklist={handleUpdateAndRefreshChecklist}/>
+                    <ChecklistTitle checklist={checklist} handleUpdateChecklist={handleUpdateChecklist}/>
                     <Tooltip title='Delete Checklist' placement='left'>
                         <IconButton onClick={() => openDeleteChecklistDialog(checklist)}>
                             <ClearIcon/>

@@ -35,15 +35,20 @@ export default function Checklists() {
     const refreshChecklistById = async (checklistId: number) => {
         try {
             const updatedChecklist = await getChecklist(checklistId);
-            setChecklists(prevChecklists =>
-                prevChecklists.map(checklist =>
-                    checklist.id === checklistId
-                        ? updatedChecklist
-                        : checklist));
+            setChecklistById(updatedChecklist);
         } catch (error: any) {
             handleError('Error refreshing checklist: ' + error.message);
             throw error;
         }
+    }
+
+    const setChecklistById = (updatedChecklist: Checklist) => {
+        const checklistId = updatedChecklist.id;
+        setChecklists(prevChecklists =>
+            prevChecklists.map(checklist =>
+                checklist.id === checklistId
+                    ? updatedChecklist
+                    : checklist));
     }
 
     const handleDeleteChecklist = async (checklistId: number) => {
@@ -89,6 +94,7 @@ export default function Checklists() {
                         <ChecklistCard
                             checklist={checklist}
                             refreshChecklist={refreshChecklistById}
+                            setChecklistById={setChecklistById}
                             openDeleteChecklistDialog={openDeleteChecklistDialog}
                             handleError={handleError}
                         />

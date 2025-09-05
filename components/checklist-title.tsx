@@ -4,10 +4,10 @@ import {Checklist} from "@/types/checklist";
 
 interface ChecklistTitleProps {
     checklist: Checklist;
-    handleUpdateAndRefreshChecklist: (checklist: Checklist) => Promise<void>;
+    handleUpdateChecklist: (checklist: Checklist) => Promise<void>;
 }
 
-export default function ChecklistTitle({checklist, handleUpdateAndRefreshChecklist}: ChecklistTitleProps) {
+export default function ChecklistTitle({checklist, handleUpdateChecklist}: ChecklistTitleProps) {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editedTitle, setEditedTitle] = useState("");
     const [titleIsInvalid, setTitleIsInvalid] = useState(false);
@@ -19,17 +19,15 @@ export default function ChecklistTitle({checklist, handleUpdateAndRefreshCheckli
 
     const saveChecklistTitle = async (event: FormEvent) => {
         event.preventDefault();
-        try {
-            if (editedTitle) {
-                const editedChecklist = {...checklist};
-                editedChecklist.title = editedTitle;
-                await handleUpdateAndRefreshChecklist(editedChecklist);
-                setIsEditingTitle(false);
-                setEditedTitle("");
-            } else {
-                setTitleIsInvalid(true);
-            }
-        } catch (error: any) {}
+        if (editedTitle) {
+            const editedChecklist = {...checklist};
+            editedChecklist.title = editedTitle;
+            await handleUpdateChecklist(editedChecklist);
+            setIsEditingTitle(false);
+            setEditedTitle("");
+        } else {
+            setTitleIsInvalid(true);
+        }
     }
 
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
