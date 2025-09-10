@@ -5,6 +5,12 @@ export interface Item {
     checklistId: number;
 }
 
+export interface ItemCreate {
+    text: string,
+    isComplete: boolean,
+    checklistId: number
+}
+
 export interface Checklist {
     id: number;
     title: string;

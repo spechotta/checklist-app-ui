@@ -10,11 +10,10 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 interface AddChecklistItemProps {
-    checklistId: number;
-    addChecklistItem: (checklistId: number, text: string) => Promise<void>;
+    addChecklistItem: (text: string) => Promise<void>;
 }
 
-export default function AddChecklistItem({checklistId, addChecklistItem}: AddChecklistItemProps) {
+export default function AddChecklistItem({addChecklistItem}: AddChecklistItemProps) {
     const [newItemText, setNewItemText] = useState("");
 
     const saveNewItem = async (event: FormEvent) => {
@@ -25,7 +24,7 @@ export default function AddChecklistItem({checklistId, addChecklistItem}: AddChe
         if (!trimmedText) {
             //TODO:add logic to display error message to user if trimmed text is empty
         } else {
-            await addChecklistItem(checklistId, trimmedText);
+            await addChecklistItem(trimmedText);
         }
         setNewItemText("");
     }

@@ -1,8 +1,8 @@
 import React from "react";
-import {Checklist, Item} from "@/types/checklist";
+import {Checklist, Item, ItemCreate} from "@/types/checklist";
 import ChecklistRow from "./checklist-row";
 import AddChecklistItem from "./add-checklist-item";
-import {updateItem, deleteItem, addItem, updateChecklist} from "@/networking/checklists";
+import {updateItem, deleteItem, updateChecklist} from "@/networking/checklists";
 import {
     Box,
     Card,
@@ -31,17 +31,19 @@ export default function ChecklistCard({
       handleError
     }: ChecklistCardProps) {
 
-    const addChecklistItem = async (checklistId: number, newText: string) => {
-        const newItem = {
-            "text": newText,
-            "isComplete": false
+    const addChecklistItem = async (newItemText: string) => {
+        const newItem: ItemCreate = {
+            text: newItemText,
+            isComplete: false,
+            checklistId: checklist.id
         };
-        try {
-            await addItem(checklistId, newItem);
-            await refreshChecklist(checklistId);
-        } catch (error: any) {
-            console.log("Failed to add new item.");
-        }
+
+        const updatedChecklist: Checklist = {
+            ...checklist,
+            items: [...checklist.items, newItem as Item]
+        };
+
+        await handleUpdateChecklist(updatedChecklist);
     }
 
     const handleItemUpdate = async (updatedItem: Item) => {
@@ -110,7 +112,7 @@ export default function ChecklistCard({
                                 deleteChecklistItem={deleteChecklistItem}
                             />
                         ))}
-                        <AddChecklistItem checklistId={checklist.id} addChecklistItem={addChecklistItem}/>
+                        <AddChecklistItem addChecklistItem={addChecklistItem}/>
                     </List>
                 </Paper>
             </CardContent>
