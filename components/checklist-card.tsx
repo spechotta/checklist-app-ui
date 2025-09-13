@@ -17,7 +17,6 @@ import ChecklistTitle from "@/components/checklist-title";
 
 interface ChecklistCardProps {
     checklist: Checklist;
-    refreshChecklist: (checklistId: number) => Promise<void>;
     setChecklistById: (checklist: Checklist) => void;
     openDeleteChecklistDialog: (checklist: Checklist) => void;
     handleError: (message: string) => void;
@@ -25,7 +24,6 @@ interface ChecklistCardProps {
 
 export default function ChecklistCard({
       checklist,
-      refreshChecklist,
       setChecklistById,
       openDeleteChecklistDialog,
       handleError
@@ -46,32 +44,24 @@ export default function ChecklistCard({
         await handleUpdateChecklist(updatedChecklist);
     }
 
-    const handleItemUpdate = async (updatedItem: Item) => {
-        try {
-            await updateItem(updatedItem.checklistId, updatedItem.id, updatedItem);
-            await refreshChecklist(updatedItem.checklistId);
-        } catch (error: any) {
-            console.log("Failed to update item.");
-        }
+    const updateChecklistItem = async (updatedItem: Item) => {
+        const updatedChecklist: Checklist = {
+            ...checklist,
+            items: checklist.items.map((item) =>
+                item.id === updatedItem.id ? updatedItem : item
+            )
+        };
+
+        await handleUpdateChecklist(updatedChecklist);
     }
 
-    const updateItemIsComplete = async (item: Item) => {
-        const toggledItem = {...item, isComplete: !item.isComplete};
-        await handleItemUpdate(toggledItem);
-    }
+    const deleteChecklistItem = async (itemToDelete: Item) => {
+        const updatedChecklist: Checklist = {
+            ...checklist,
+            items: checklist.items.filter((item) => item.id !== itemToDelete.id)
+        };
 
-    const updateItemText = async (item: Item, editedText: string) => {
-        const editedItem = {...item, text: editedText};
-        await handleItemUpdate(editedItem);
-    }
-
-    const deleteChecklistItem = async (item: Item) => {
-        try {
-            await deleteItem(item.checklistId, item.id);
-            await refreshChecklist(item.checklistId);
-        } catch (error: any) {
-            console.log("Failed to update item.");
-        }
+        await handleUpdateChecklist(updatedChecklist);
     }
 
     const handleUpdateChecklist = async (checklist: Checklist) => {
@@ -107,8 +97,7 @@ export default function ChecklistCard({
                             <ChecklistRow
                                 key={item.id}
                                 item={item}
-                                updateItemIsComplete={updateItemIsComplete}
-                                updateItemText={updateItemText}
+                                updateChecklistItem={updateChecklistItem}
                                 deleteChecklistItem={deleteChecklistItem}
                             />
                         ))}

@@ -15,15 +15,13 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
 interface ChecklistRowProps {
     item: Item;
-    updateItemIsComplete: (item: Item) => Promise<void>;
-    updateItemText: (item: Item, editedText: string) => Promise<void>;
+    updateChecklistItem: (item: Item) => Promise<void>;
     deleteChecklistItem: (item: Item) => Promise<void>;
 }
 
 export default function ChecklistRow({
      item,
-     updateItemIsComplete,
-     updateItemText,
+     updateChecklistItem,
      deleteChecklistItem
  }: ChecklistRowProps) {
     const [isEditing, setIsEditing] = useState(false);
@@ -50,9 +48,15 @@ export default function ChecklistRow({
         if (!trimmedText) {
             await deleteChecklistItem(item);
         } else if (trimmedText !== item.text) {
-            await updateItemText(item, trimmedText);
+            const editedItem = {...item, text: trimmedText};
+            await updateChecklistItem(editedItem);
         }
         setIsEditing(false);
+    }
+
+    const updateItemIsComplete = async (item: Item) => {
+        const toggledItem = {...item, isComplete: !item.isComplete};
+        await updateChecklistItem(toggledItem);
     }
 
     return (

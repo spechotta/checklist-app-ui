@@ -93,7 +93,6 @@ export default function Checklists() {
                     <Grid key={checklist.id} size={{xl: 4, lg: 4, md: 6, sm: 9, xs: 12}}>
                         <ChecklistCard
                             checklist={checklist}
-                            refreshChecklist={refreshChecklistById}
                             setChecklistById={setChecklistById}
                             openDeleteChecklistDialog={openDeleteChecklistDialog}
                             handleError={handleError}
