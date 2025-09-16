@@ -36,10 +36,8 @@ export default function AddChecklistDialog({onClose, onSubmit}: AddChecklistDial
         event.preventDefault();
         if (newItemText) {
             const newItem: Item = {
-                id: -1,
                 text: newItemText,
-                isComplete: false,
-                checklistId: -1
+                isComplete: false
             };
             setItems([...items, newItem]);
             setNewItemText("");

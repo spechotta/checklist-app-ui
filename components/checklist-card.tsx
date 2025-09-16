@@ -1,8 +1,8 @@
 import React from "react";
-import {Checklist, Item, ItemCreate} from "@/types/checklist";
+import {Checklist, Item} from "@/types/checklist";
 import ChecklistRow from "./checklist-row";
 import AddChecklistItem from "./add-checklist-item";
-import {updateItem, deleteItem, updateChecklist} from "@/networking/checklists";
+import {updateChecklist} from "@/networking/checklists";
 import {
     Box,
     Card,
@@ -30,7 +30,7 @@ export default function ChecklistCard({
     }: ChecklistCardProps) {
 
     const addChecklistItem = async (newItemText: string) => {
-        const newItem: ItemCreate = {
+        const newItem: Item = {
             text: newItemText,
             isComplete: false,
             checklistId: checklist.id

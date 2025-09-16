@@ -5,7 +5,7 @@ import ChecklistCard from '../components/checklist-card';
 import DeleteChecklistDialog from "../components/delete-checklist-dialog"
 import {Checklist} from "@/types/checklist";
 import {Alert, Box, CircularProgress, Grid, Snackbar} from "@mui/material";
-import {getChecklist, getChecklists, deleteChecklist} from "@/networking/checklists";
+import {getChecklists, deleteChecklist} from "@/networking/checklists";
 import Delay from "@/components/delay";
 import ChecklistsHeader from "@/components/checklists-header";
 
@@ -31,17 +31,6 @@ export default function Checklists() {
             setIsLoading(false);
         }
     }
-
-    const refreshChecklistById = async (checklistId: number) => {
-        try {
-            const updatedChecklist = await getChecklist(checklistId);
-            setChecklistById(updatedChecklist);
-        } catch (error: any) {
-            handleError('Error refreshing checklist: ' + error.message);
-            throw error;
-        }
-    }
-
     const setChecklistById = (updatedChecklist: Checklist) => {
         const checklistId = updatedChecklist.id;
         setChecklists(prevChecklists =>
