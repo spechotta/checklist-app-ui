@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from "react";
+import React, {ChangeEvent, FormEvent, useState} from "react";
 import {Item} from "@/types/checklist";
 import {
     Checkbox,
@@ -26,6 +26,7 @@ export default function ChecklistRow({
  }: ChecklistRowProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(item.text);
+    const [textIsInvalid, setTextIsInvalid] = useState(false);
 
     const toggleEditMode = () => {
         if (isEditing) {
@@ -40,18 +41,21 @@ export default function ChecklistRow({
         setIsEditing(false);
     }
 
+    const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setTextIsInvalid(!value);
+        setEditedText(value);
+    }
+
     const saveEditedText = async (event: FormEvent) => {
         event.preventDefault();
-        const trimmedText = editedText.trim();
-        //TODO: move logic to trim item text to API service layer
-
-        if (!trimmedText) {
-            await deleteChecklistItem(item);
-        } else if (trimmedText !== item.text) {
-            const editedItem = {...item, text: trimmedText};
+        if (editedText) {
+            const editedItem = {...item, text: editedText};
             await updateChecklistItem(editedItem);
+            setIsEditing(false);
+        } else {
+            setTextIsInvalid(true);
         }
-        setIsEditing(false);
     }
 
     const updateItemIsComplete = async (item: Item) => {
@@ -100,7 +104,9 @@ export default function ChecklistRow({
                             <TextField
                                 variant="standard"
                                 value={editedText}
-                                onChange={(event) => setEditedText(event.target.value)}
+                                onChange={handleTextChange}
+                                error={textIsInvalid}
+                                helperText={textIsInvalid ? "Task/Item Description is Required" : ""}
                                 onKeyDown={(event) => {
                                     if (event.key === "Escape") {
                                         cancelEdit();

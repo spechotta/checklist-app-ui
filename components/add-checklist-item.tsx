@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from "react";
+import React, {ChangeEvent, FormEvent, useState} from "react";
 import {
     Box,
     ClickAwayListener,
@@ -15,22 +15,26 @@ interface AddChecklistItemProps {
 
 export default function AddChecklistItem({addChecklistItem}: AddChecklistItemProps) {
     const [newItemText, setNewItemText] = useState("");
+    const [textIsInvalid, setTextIsInvalid] = useState(false);
+
+    const handleTextChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setTextIsInvalid(!value);
+        setNewItemText(value);
+    }
 
     const saveNewItem = async (event: FormEvent) => {
         event.preventDefault();
-        const trimmedText = newItemText.trim();
-        //TODO: move logic to trim item text to API service layer
-
-        if (!trimmedText) {
-            //TODO:add logic to display error message to user if trimmed text is empty
+        if (newItemText) {
+            await addChecklistItem(newItemText);
+            setNewItemText("");
         } else {
-            await addChecklistItem(trimmedText);
+            setTextIsInvalid(true);
         }
-        setNewItemText("");
     }
 
     return (
-        <ClickAwayListener onClickAway={() => setNewItemText("")}>
+        <ClickAwayListener onClickAway={() => {setNewItemText(""); setTextIsInvalid(false);}}>
             <ListItem disablePadding>
                 <form onSubmit={saveNewItem}>
                     <Box sx={{display: "flex", alignItems: "center", pl: 2}}>
@@ -48,7 +52,9 @@ export default function AddChecklistItem({addChecklistItem}: AddChecklistItemPro
                             variant="standard"
                             placeholder="New item..."
                             value={newItemText}
-                            onChange={(event) => setNewItemText(event.target.value)}
+                            onChange={handleTextChange}
+                            error={textIsInvalid}
+                            helperText={textIsInvalid ? "Task/Item Description is Required" : ""}
                             sx={{
                                 "& .MuiInput-underline:before": {
                                     borderBottomColor: "gray",
