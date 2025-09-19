@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FormEvent, useState} from "react";
-import {Item} from "@/types/checklist";
+import {Checklist, Item} from "@/types/checklist";
 import {
     Checkbox,
     IconButton,
@@ -15,14 +15,14 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 
 interface ChecklistRowProps {
     item: Item;
-    updateChecklistItem: (item: Item) => Promise<void>;
-    deleteChecklistItem: (item: Item) => Promise<void>;
+    checklist: Checklist;
+    handleUpdateChecklist: (checklist: Checklist) => Promise<void>;
 }
 
 export default function ChecklistRow({
      item,
-     updateChecklistItem,
-     deleteChecklistItem
+     checklist,
+     handleUpdateChecklist
  }: ChecklistRowProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedText, setEditedText] = useState(item.text);
@@ -50,8 +50,13 @@ export default function ChecklistRow({
     const saveEditedText = async (event: FormEvent) => {
         event.preventDefault();
         if (editedText) {
-            const editedItem = {...item, text: editedText};
-            await updateChecklistItem(editedItem);
+            const updatedChecklist = {
+                ...checklist,
+                items: checklist.items.map((currItem) =>
+                    currItem.id === item.id ? {...currItem, text: editedText} : currItem
+                )
+            };
+            await handleUpdateChecklist(updatedChecklist);
             setIsEditing(false);
         } else {
             setTextIsInvalid(true);
@@ -59,8 +64,21 @@ export default function ChecklistRow({
     }
 
     const updateItemIsComplete = async (item: Item) => {
-        const toggledItem = {...item, isComplete: !item.isComplete};
-        await updateChecklistItem(toggledItem);
+        const updatedChecklist = {
+            ...checklist,
+            items: checklist.items.map((currItem) =>
+                currItem.id === item.id ? {...currItem, isComplete: !item.isComplete} : currItem
+            )
+        };
+        await handleUpdateChecklist(updatedChecklist);
+    }
+
+    const deleteItem = async () => {
+        const updatedChecklist = {
+            ...checklist,
+            items: checklist.items.filter((currItem) => currItem.id !== item.id),
+        };
+        await handleUpdateChecklist(updatedChecklist);
     }
 
     return (
@@ -76,7 +94,7 @@ export default function ChecklistRow({
                         </IconButton>
                         <IconButton
                             edge="end"
-                            onClick={() => deleteChecklistItem(item)}
+                            onClick={() => deleteItem()}
                         >
                             <DeleteOutlinedIcon/>
                         </IconButton>

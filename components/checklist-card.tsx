@@ -44,26 +44,6 @@ export default function ChecklistCard({
         await handleUpdateChecklist(updatedChecklist);
     }
 
-    const updateChecklistItem = async (updatedItem: Item) => {
-        const updatedChecklist: Checklist = {
-            ...checklist,
-            items: checklist.items.map((item) =>
-                item.id === updatedItem.id ? updatedItem : item
-            )
-        };
-
-        await handleUpdateChecklist(updatedChecklist);
-    }
-
-    const deleteChecklistItem = async (itemToDelete: Item) => {
-        const updatedChecklist: Checklist = {
-            ...checklist,
-            items: checklist.items.filter((item) => item.id !== itemToDelete.id)
-        };
-
-        await handleUpdateChecklist(updatedChecklist);
-    }
-
     const handleUpdateChecklist = async (checklist: Checklist) => {
         try {
             const updatedChecklist = await updateChecklist(checklist);
@@ -97,8 +77,8 @@ export default function ChecklistCard({
                             <ChecklistRow
                                 key={item.id}
                                 item={item}
-                                updateChecklistItem={updateChecklistItem}
-                                deleteChecklistItem={deleteChecklistItem}
+                                checklist={checklist}
+                                handleUpdateChecklist={handleUpdateChecklist}
                             />
                         ))}
                         <AddChecklistItem addChecklistItem={addChecklistItem}/>
