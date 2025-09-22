@@ -8,10 +8,9 @@ import {
     ListItemText,
     Box,
     TextField,
-    ClickAwayListener
+    Tooltip
 } from "@mui/material";
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import ClearIcon from "@mui/icons-material/Clear";
 
 interface ChecklistRowProps {
     item: Item;
@@ -28,16 +27,8 @@ export default function ChecklistRow({
     const [editedText, setEditedText] = useState(item.text);
     const [textIsInvalid, setTextIsInvalid] = useState(false);
 
-    const toggleEditMode = () => {
-        if (isEditing) {
-            cancelEdit();
-        } else {
-            setIsEditing(true);
-        }
-    }
-
     const cancelEdit = () => {
-        setEditedText("");
+        setEditedText(item.text);
         setIsEditing(false);
     }
 
@@ -82,23 +73,13 @@ export default function ChecklistRow({
     }
 
     return (
-        <ClickAwayListener onClickAway={cancelEdit}>
             <ListItem
                 secondaryAction={
-                    <>
-                        <IconButton
-                            edge="end"
-                            onClick={toggleEditMode}
-                        >
-                            <EditOutlinedIcon/>
+                    <Tooltip title='Delete Task/Item' placement="top">
+                        <IconButton onClick={() => deleteItem()}>
+                            <ClearIcon/>
                         </IconButton>
-                        <IconButton
-                            edge="end"
-                            onClick={() => deleteItem()}
-                        >
-                            <DeleteOutlinedIcon/>
-                        </IconButton>
-                    </>
+                    </Tooltip>
                 }
                 disablePadding
             >
@@ -123,6 +104,7 @@ export default function ChecklistRow({
                                 variant="standard"
                                 value={editedText}
                                 onChange={handleTextChange}
+                                onBlur={cancelEdit}
                                 error={textIsInvalid}
                                 helperText={textIsInvalid ? "Task/Item Description is Required" : ""}
                                 onKeyDown={(event) => {
@@ -142,16 +124,26 @@ export default function ChecklistRow({
                             />
                         </form>
                     ) : (
-                        <ListItemText
-                            primary={item.text}
-                            sx={{
-                                textDecoration: item.isComplete ? "line-through" : "none",
-                                color: item.isComplete ? "gray" : "inherit"
-                            }}
-                        />
+                        <Tooltip
+                            title="Edit Task/Item"
+                            placement="right"
+                        >
+                            <ListItemText
+                                onClick={() => setIsEditing(true)}
+                                sx={{
+                                    color: "text.secondary",
+                                    cursor: "text",
+                                    borderBottom: "2px solid transparent",
+                                    "&:hover": {
+                                        borderBottomColor: "gray"
+                                    },
+                                }}
+                            >
+                                {item.text}
+                            </ListItemText>
+                        </Tooltip>
                     )}
                 </Box>
             </ListItem>
-        </ClickAwayListener>
     );
 }
