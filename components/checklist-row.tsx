@@ -131,9 +131,10 @@ export default function ChecklistRow({
                             <ListItemText
                                 onClick={() => setIsEditing(true)}
                                 sx={{
-                                    color: "text.secondary",
                                     cursor: "text",
                                     borderBottom: "2px solid transparent",
+                                    color: item.isComplete ? "gray" : "inherit",
+                                    textDecoration: item.isComplete ? "line-through" : "none",
                                     "&:hover": {
                                         borderBottomColor: "gray"
                                     },
